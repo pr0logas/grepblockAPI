@@ -1,9 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/python4
+import pymongo
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
-from flask import send_from_directory
-from json import dumps
-import os, pymongo
+from gevent.pywsgi import WSGIServer
 from mongoAuth import auth
 
 # Init MongoDB
@@ -52,4 +51,5 @@ api.add_resource(Blocks, '/block') # Route_1
 api.add_resource(Wallets, '/wallet') # Route_1
 
 if __name__ == '__main__':
-     app.run(port=5000)
+    http_server = WSGIServer(('', 5000), app)
+    http_server.serve_forever()
