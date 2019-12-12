@@ -1,19 +1,13 @@
 #!/usr/bin/python3
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
-from flask_httpauth import HTTPBasicAuth
 from flask import send_from_directory
 from json import dumps
-import os
-import pymongo
-
-mongoAuth = {
-    "host" : "127.0.0.1",
-    "port" : ":27017",
-}
+import os, pymongo
+from mongoAuth import auth
 
 # Init MongoDB
-MC = pymongo.MongoClient(mongoAuth['host'] + mongoAuth['port'])
+MC = pymongo.MongoClient(auth['host'] + auth['port'])
 
 # Flask rules
 app = Flask(__name__)
