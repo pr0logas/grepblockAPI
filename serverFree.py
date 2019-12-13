@@ -13,12 +13,22 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 api = Api(app, prefix="/apiv1/free")
 
-''' http://127.0.0.1:5000/apiv1/free/lastblock?assetname=adeptio '''
+''' http://127.0.0.1:5000/apiv1/free/getlastblock?assetname=adeptio '''
 class Lastblock(Resource):
     def get(self):
         blockchain = request.args.get('assetname')
         try:
             searchLb = (MC[blockchain]['blocks'].find({},{ "_id": 0, "block": 1}).sort([( '$natural', -1 )] ).limit(1))
+            return (searchLb[0])
+        except IndexError:
+            return ('{"ERROR" : "No data found"}')
+
+''' http://127.0.0.1:5000/apiv1/free/getdifficulty?assetname=adeptio '''
+class Lastblock(Resource):
+    def get(self):
+        blockchain = request.args.get('assetname')
+        try:
+            searchLb = (MC[blockchain]['blocks'].find({},{ "_id": 0, "difficulty": 1}).sort([( '$natural', -1 )] ).limit(1))
             return (searchLb[0])
         except IndexError:
             return ('{"ERROR" : "No data found"}')
@@ -69,7 +79,8 @@ class Wallet(Resource):
             return ('{"ERROR" : "No data found"}')
 
 
-api.add_resource(Lastblock, '/lastblock') 
+api.add_resource(Lastblock, '/getlastblock') 
+api.add_resource(Difficulty, '/getdifficulty') 
 api.add_resource(Block, '/block') 
 api.add_resource(Blockhash, '/blockhash') 
 api.add_resource(Transaction, '/transaction') 
