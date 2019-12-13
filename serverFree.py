@@ -24,7 +24,7 @@ class Lastblock(Resource):
             return ('{"ERROR" : "No data found"}')
 
 ''' http://127.0.0.1:5000/apiv1/free/getdifficulty?assetname=adeptio '''
-class Lastblock(Resource):
+class Difficulty(Resource):
     def get(self):
         blockchain = request.args.get('assetname')
         try:
