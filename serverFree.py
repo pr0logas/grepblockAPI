@@ -14,7 +14,7 @@ app.url_map.strict_slashes = False
 api = Api(app, prefix="/apiv1/free")
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastblock?assetname=adeptio '''
-class Lastblock(Resource):
+class GetLastBlock(Resource):
     def get(self):
         blockchain = request.args.get('assetname')
         try:
@@ -23,16 +23,38 @@ class Lastblock(Resource):
         except IndexError:
             return ('{"ERROR" : "No data found"}')
 
-''' http://127.0.0.1:5000/apiv1/free/getdifficulty?assetname=adeptio '''
-class Difficulty(Resource):
+''' http://127.0.0.1:5000/apiv1/free/getlastdifficulty?assetname=adeptio '''
+class GetLastDifficulty(Resource):
     def get(self):
         blockchain = request.args.get('assetname')
         try:
-            searchLb = (MC[blockchain]['blocks'].find({},{ "_id": 0, "difficulty": 1}).sort([( '$natural', -1 )] ).limit(1))
+            searchDiff = (MC[blockchain]['blocks'].find({},{ "_id": 0, "difficulty": 1}).sort([( '$natural', -1 )] ).limit(1))
+            return (searchDiff[0])
+        except IndexError:
+            return ('{"ERROR" : "No data found"}')
+
+''' http://127.0.0.1:5000/apiv1/free/getblockbyhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
+class GetBlockByHash(Resource):
+    def get(self):
+        blockH = request.args.get('blockhash')
+        print blockH
+        blockchain = request.args.get('assetname')
+        try:
+            searchLb = (MC[blockchain]['blocks'].find({'hash' : str(blockH)},{ "_id" : 0, "block": 1}))
             return (searchLb[0])
         except IndexError:
             return ('{"ERROR" : "No data found"}')
 
+''' http://127.0.0.1:5000/apiv1/free/getblocktime?assetname=adeptio&num=123 '''
+class GetBlockTimeByHeight(Resource):
+    def get(self):
+        block = request.args.get('num')
+        blockchain = request.args.get('assetname')
+        try:
+            searchLb = (MC[blockchain]['blocks'].find({'block' : int(block)},{ "_id" : 0, "time": 1}))
+            return (searchLb[0])
+        except IndexError:
+            return ('{"ERROR" : "No data found"}')
 
 ''' http://127.0.0.1:5000/apiv1/free/block?assetname=adeptio&num=123 '''
 class Block(Resource):
@@ -78,14 +100,31 @@ class Wallet(Resource):
         except IndexError:
             return ('{"ERROR" : "No data found"}')
 
+''' http://127.0.0.1:5000/apiv1/free/lastparsedwallet?assetname=adeptio '''
+class LastParsedWallet(Resource):
+    def get(self):
+        blockchain = request.args.get('assetname')
+        try:
+            searchWallet = (MC[blockchain]['wallets'].find({},{ "_id": 0}).sort([( '$natural', -1 )] ).limit(1))
+            return (searchWallet[0])
+        except IndexError:
+            return ('{"ERROR" : "No data found"}')
 
-api.add_resource(Lastblock, '/getlastblock') 
-api.add_resource(Difficulty, '/getdifficulty') 
+
+# Routes
+api.add_resource(GetLastBlock, '/getlastblock') 
+api.add_resource(GetLastDifficulty, '/getlastdifficulty') 
+api.add_resource(GetBlockByHash, '/getblockbyhash') 
+api.add_resource(GetBlockTimeByHeight, '/getblocktime') 
 api.add_resource(Block, '/block') 
 api.add_resource(Blockhash, '/blockhash') 
 api.add_resource(Transaction, '/transaction') 
+api.add_resource(LastParsedWallet, '/lastparsedwallet')
 api.add_resource(Wallet, '/wallet') 
 
+
+
+# Serve the high performance http server
 if __name__ == '__main__':
     http_server = WSGIServer(('', 5000), app)
     http_server.serve_forever()
