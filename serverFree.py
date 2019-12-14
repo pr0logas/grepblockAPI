@@ -22,8 +22,7 @@ limiter = Limiter(
     default_limits=["6/minute"]
     )
 
-notFoundString = json.loads('{"ERROR" : "No data found"}')
-notFound = json.dumps(notFoundString)
+notFound = json.loads('{"ERROR" : "No data found"}')
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastblock?assetname=adeptio '''
 class GetLastBlock(Resource):
