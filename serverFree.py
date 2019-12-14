@@ -1,5 +1,6 @@
 #!/usr/bin/python4
 import pymongo
+import json
 from flask import Flask, request, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -21,6 +22,9 @@ limiter = Limiter(
     default_limits=["6/minute"]
     )
 
+notFoundString = json.loads('{"ERROR" : "No data found"}')
+notFound = json.dumps(notFoundString)
+
 ''' http://127.0.0.1:5000/apiv1/free/getlastblock?assetname=adeptio '''
 class GetLastBlock(Resource):
     @limiter.limit("6/minute")
@@ -30,7 +34,7 @@ class GetLastBlock(Resource):
             searchLb = (MC[blockchain]['blocks'].find({},{ "_id": 0, "block": 1}).sort([( '$natural', -1 )] ).limit(1))
             return (searchLb[0])
         except IndexError:
-            return ('{"ERROR" : "No data found"}')
+            return notFound
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastdifficulty?assetname=adeptio '''
 class GetLastDifficulty(Resource):
@@ -41,7 +45,7 @@ class GetLastDifficulty(Resource):
             searchDiff = (MC[blockchain]['blocks'].find({},{ "_id": 0, "difficulty": 1}).sort([( '$natural', -1 )] ).limit(1))
             return (searchDiff[0])
         except IndexError:
-            return ('{"ERROR" : "No data found"}')
+            return notFound
 
 ''' http://127.0.0.1:5000/apiv1/free/getblockbyhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
 class GetBlockByHash(Resource):
@@ -54,7 +58,7 @@ class GetBlockByHash(Resource):
             searchLb = (MC[blockchain]['blocks'].find({'hash' : str(blockH)},{ "_id" : 0, "block": 1}))
             return (searchLb[0])
         except IndexError:
-            return ('{"ERROR" : "No data found"}')
+            return notFound
 
 ''' http://127.0.0.1:5000/apiv1/free/getblocktimebynum?assetname=adeptio&num=123 '''
 class GetBlockTimeByHeight(Resource):
@@ -66,7 +70,7 @@ class GetBlockTimeByHeight(Resource):
             searchLb = (MC[blockchain]['blocks'].find({'block' : int(block)},{ "_id" : 0, "time": 1}))
             return (searchLb[0])
         except IndexError:
-            return ('{"ERROR" : "No data found"}')
+            return notFound
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastparsedwallet?assetname=adeptio '''
 class LastParsedWallet(Resource):
@@ -77,7 +81,7 @@ class LastParsedWallet(Resource):
             searchWallet = (MC[blockchain]['wallets'].find({},{ "_id": 0}).sort([( '$natural', -1 )] ).limit(1))
             return (searchWallet[0])
         except IndexError:
-            return ('{"ERROR" : "No data found"}')
+            return notFound
 
 ''' http://127.0.0.1:5000/apiv1/free/findbyblocknum?assetname=adeptio&num=123 '''
 class Block(Resource):
@@ -89,7 +93,7 @@ class Block(Resource):
             searchBlock = MC[blockchain]['blocks'].find({'block' : int(blockNum)},{ "_id" : 0})
             return (searchBlock[0])
         except IndexError:
-            return ('{"ERROR" : "No data found"}')
+            return notFound
 
 ''' http://127.0.0.1:5000/apiv1/free/findbyblockhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
 class Blockhash(Resource):
@@ -101,7 +105,7 @@ class Blockhash(Resource):
             searchBlockhash = MC[blockchain]['blocks'].find({'hash' : str(blockHash)},{ "_id" : 0})
             return (searchBlockhash[0])
         except IndexError:
-            return ('{"ERROR" : "No data found"}')
+            return notFound
 
 ''' http://127.0.0.1:5000/apiv1/free/findbytransaction?assetname=adeptio&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
 class Transaction(Resource):
@@ -113,7 +117,7 @@ class Transaction(Resource):
             searchTxid = MC[blockchain]['blocks'].find({'tx' : transaction},{ "_id" : 0})
             return (searchTxid[0])
         except IndexError:
-            return ('{"ERROR" : "No data found"}')
+            return notFound
 
 ''' http://127.0.0.1:5000/apiv1/free/findbywallet?assetname=adeptio&addr=AV12hgJ8VzCt9ANmYCN6rbBLEYPt9VJTP6 '''
 class Wallet(Resource):
@@ -125,7 +129,7 @@ class Wallet(Resource):
             searchWallet = MC[blockchain]['wallets'].find({'wallet' : walletAddr},{ "_id" : 0})
             return (searchWallet[0])
         except IndexError:
-            return ('{"ERROR" : "No data found"}')
+            return notFound
 
 
 # Routes
