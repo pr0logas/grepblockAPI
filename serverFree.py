@@ -45,7 +45,7 @@ class GetBlockByHash(Resource):
         except IndexError:
             return ('{"ERROR" : "No data found"}')
 
-''' http://127.0.0.1:5000/apiv1/free/getblocktime?assetname=adeptio&num=123 '''
+''' http://127.0.0.1:5000/apiv1/free/getblocktimebynum?assetname=adeptio&num=123 '''
 class GetBlockTimeByHeight(Resource):
     def get(self):
         block = request.args.get('num')
@@ -56,7 +56,17 @@ class GetBlockTimeByHeight(Resource):
         except IndexError:
             return ('{"ERROR" : "No data found"}')
 
-''' http://127.0.0.1:5000/apiv1/free/block?assetname=adeptio&num=123 '''
+''' http://127.0.0.1:5000/apiv1/free/getlastparsedwallet?assetname=adeptio '''
+class LastParsedWallet(Resource):
+    def get(self):
+        blockchain = request.args.get('assetname')
+        try:
+            searchWallet = (MC[blockchain]['wallets'].find({},{ "_id": 0}).sort([( '$natural', -1 )] ).limit(1))
+            return (searchWallet[0])
+        except IndexError:
+            return ('{"ERROR" : "No data found"}')
+
+''' http://127.0.0.1:5000/apiv1/free/findbyblock?assetname=adeptio&num=123 '''
 class Block(Resource):
     def get(self):
         blockNum = request.args.get('num')
@@ -67,7 +77,7 @@ class Block(Resource):
         except IndexError:
             return ('{"ERROR" : "No data found"}')
 
-''' http://127.0.0.1:5000/apiv1/free/blockhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
+''' http://127.0.0.1:5000/apiv1/free/findbyblockhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
 class Blockhash(Resource):
     def get(self):
         blockHash = request.args.get('blockhash')
@@ -78,7 +88,7 @@ class Blockhash(Resource):
         except IndexError:
             return ('{"ERROR" : "No data found"}')
 
-''' http://127.0.0.1:5000/apiv1/free/transaction?assetname=adeptio&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
+''' http://127.0.0.1:5000/apiv1/free/findbytransaction?assetname=adeptio&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
 class Transaction(Resource):
     def get(self):
         transaction = request.args.get('txid')
@@ -89,7 +99,7 @@ class Transaction(Resource):
         except IndexError:
             return ('{"ERROR" : "No data found"}')
 
-''' http://127.0.0.1:5000/apiv1/free/wallet?assetname=adeptio&addr=Aa1Cgn1949UvoZHXRrBVYuihUUL3K6ARPn '''
+''' http://127.0.0.1:5000/apiv1/free/findbywallet?assetname=adeptio&addr=AV12hgJ8VzCt9ANmYCN6rbBLEYPt9VJTP6 '''
 class Wallet(Resource):
     def get(self):
         walletAddr = request.args.get('addr')
@@ -100,29 +110,17 @@ class Wallet(Resource):
         except IndexError:
             return ('{"ERROR" : "No data found"}')
 
-''' http://127.0.0.1:5000/apiv1/free/lastparsedwallet?assetname=adeptio '''
-class LastParsedWallet(Resource):
-    def get(self):
-        blockchain = request.args.get('assetname')
-        try:
-            searchWallet = (MC[blockchain]['wallets'].find({},{ "_id": 0}).sort([( '$natural', -1 )] ).limit(1))
-            return (searchWallet[0])
-        except IndexError:
-            return ('{"ERROR" : "No data found"}')
-
 
 # Routes
 api.add_resource(GetLastBlock, '/getlastblock') 
 api.add_resource(GetLastDifficulty, '/getlastdifficulty') 
+api.add_resource(LastParsedWallet, '/getlastparsedwallet')
 api.add_resource(GetBlockByHash, '/getblockbyhash') 
-api.add_resource(GetBlockTimeByHeight, '/getblocktime') 
-api.add_resource(Block, '/block') 
-api.add_resource(Blockhash, '/blockhash') 
-api.add_resource(Transaction, '/transaction') 
-api.add_resource(LastParsedWallet, '/lastparsedwallet')
-api.add_resource(Wallet, '/wallet') 
-
-
+api.add_resource(GetBlockTimeByHeight, '/getblocktimebynum') 
+api.add_resource(Block, '/findbyblocknum') 
+api.add_resource(Blockhash, '/findbyblockhash') 
+api.add_resource(Transaction, '/findbytransaction') 
+api.add_resource(Wallet, '/findbywallet') 
 
 # Serve the high performance http server
 if __name__ == '__main__':
