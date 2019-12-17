@@ -5,6 +5,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_restful import Resource, Api
 from gevent.pywsgi import WSGIServer
+from flask_httpauth import HTTPBasicAuth
 from mongoAuth import auth
 
 # Init MongoDB
@@ -13,19 +14,32 @@ MC = pymongo.MongoClient(auth['host'] + auth['port'])
 # Flask rules
 app = Flask(__name__)
 app.url_map.strict_slashes = False
-api = Api(app, prefix="/apiv1/free")
+api = Api(app, prefix="/apiv1/basic")
+auth = HTTPBasicAuth()
+
+USER_DATA = {
+    "admin": "SuperSecretsPwd"
+}
 
 notFound = json.loads('{"ERROR" : "No data found"}')
 
 limiter = Limiter(
     app,
     key_func=get_remote_address,
-    default_limits=["6/minute"]
+    default_limits=["60/minute"]
     )
 
-''' http://127.0.0.1:5000/apiv1/free/getlastblock?assetname=adeptio '''
+@auth.verify_password
+def verify(username, password):
+    if not (username and password):
+        return False
+    return USER_DATA.get(username) == password
+
+
+''' http://127.0.0.1:5001/apiv1/basic/getlastblock?assetname=adeptio '''
 class GetLastBlock(Resource):
-    @limiter.limit("6/minute")
+    @limiter.limit("60/minute")
+    @auth.login_required
     def get(self):
         blockchain = request.args.get('assetname')
         try:
@@ -34,9 +48,10 @@ class GetLastBlock(Resource):
         except IndexError:
             return notFound
 
-''' http://127.0.0.1:5000/apiv1/free/getlastdifficulty?assetname=adeptio '''
+''' http://127.0.0.1:5001/apiv1/basic/getlastdifficulty?assetname=adeptio '''
 class GetLastDifficulty(Resource):
-    @limiter.limit("6/minute")
+    @auth.login_required
+    @limiter.limit("60/minute")
     def get(self):
         blockchain = request.args.get('assetname')
         try:
@@ -45,9 +60,10 @@ class GetLastDifficulty(Resource):
         except IndexError:
             return notFound
 
-''' http://127.0.0.1:5000/apiv1/free/getblockbyhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
+''' http://127.0.0.1:5001/apiv1/basic/getblockbyhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
 class GetBlockByHash(Resource):
-    @limiter.limit("6/minute")
+    @auth.login_required
+    @limiter.limit("60/minute")
     def get(self):
         blockH = request.args.get('blockhash')
         blockchain = request.args.get('assetname')
@@ -57,9 +73,10 @@ class GetBlockByHash(Resource):
         except IndexError:
             return notFound
 
-''' http://127.0.0.1:5000/apiv1/free/getblocktimebynum?assetname=adeptio&num=123 '''
+''' http://127.0.0.1:5001/apiv1/basic/getblocktimebynum?assetname=adeptio&num=123 '''
 class GetBlockTimeByHeight(Resource):
-    @limiter.limit("6/minute")
+    @auth.login_required
+    @limiter.limit("60/minute")
     def get(self):
         block = request.args.get('num')
         blockchain = request.args.get('assetname')
@@ -69,9 +86,10 @@ class GetBlockTimeByHeight(Resource):
         except IndexError:
             return notFound
 
-''' http://127.0.0.1:5000/apiv1/free/getlastparsedwallet?assetname=adeptio '''
+''' http://127.0.0.1:5001/apiv1/basic/getlastparsedwallet?assetname=adeptio '''
 class LastParsedWallet(Resource):
-    @limiter.limit("6/minute")
+    @auth.login_required
+    @limiter.limit("60/minute")
     def get(self):
         blockchain = request.args.get('assetname')
         try:
@@ -80,9 +98,10 @@ class LastParsedWallet(Resource):
         except IndexError:
             return notFound
 
-''' http://127.0.0.1:5000/apiv1/free/findbyblocknum?assetname=adeptio&num=123 '''
+''' http://127.0.0.1:5001/apiv1/basic/findbyblocknum?assetname=adeptio&num=123 '''
 class Block(Resource):
-    @limiter.limit("6/minute")
+    @auth.login_required
+    @limiter.limit("60/minute")
     def get(self):
         blockNum = request.args.get('num')
         blockchain = request.args.get('assetname')
@@ -92,9 +111,10 @@ class Block(Resource):
         except IndexError:
             return notFound
 
-''' http://127.0.0.1:5000/apiv1/free/findbyblockhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
+''' http://127.0.0.1:5001/apiv1/basic/findbyblockhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
 class Blockhash(Resource):
-    @limiter.limit("6/minute")
+    @auth.login_required
+    @limiter.limit("60/minute")
     def get(self):
         blockHash = request.args.get('blockhash')
         blockchain = request.args.get('assetname')
@@ -104,9 +124,10 @@ class Blockhash(Resource):
         except IndexError:
             return notFound
 
-''' http://127.0.0.1:5000/apiv1/free/findbytransaction?assetname=adeptio&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
+''' http://127.0.0.1:5001/apiv1/basic/findbytransaction?assetname=adeptio&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
 class Transaction(Resource):
-    @limiter.limit("6/minute")
+    @auth.login_required
+    @limiter.limit("60/minute")
     def get(self):
         transaction = request.args.get('txid')
         blockchain = request.args.get('assetname')
@@ -116,9 +137,10 @@ class Transaction(Resource):
         except IndexError:
             return notFound
 
-''' http://127.0.0.1:5000/apiv1/free/findbywallet?assetname=adeptio&addr=AV12hgJ8VzCt9ANmYCN6rbBLEYPt9VJTP6 '''
+''' http://127.0.0.1:5001/apiv1/basic/findbywallet?assetname=adeptio&addr=AV12hgJ8VzCt9ANmYCN6rbBLEYPt9VJTP6 '''
 class Wallet(Resource):
-    @limiter.limit("6/minute")
+    @auth.login_required
+    @limiter.limit("60/minute")
     def get(self):
         walletAddr = request.args.get('addr')
         blockchain = request.args.get('assetname')
@@ -142,5 +164,5 @@ api.add_resource(Wallet, '/findbywallet')
 
 # Serve the high performance http server
 if __name__ == '__main__':
-    http_server = WSGIServer(('', 5000), app)
+    http_server = WSGIServer(('', 5001), app)
     http_server.serve_forever()
