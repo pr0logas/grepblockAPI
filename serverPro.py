@@ -34,7 +34,7 @@ limiter = Limiter(
 def webRequest(argument):
     result = notFound
     url = ('https://grepblock.com/parsedb?query='+argument)
-    header = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) grepblock.com/api/free/' }
+    header = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) grepblock.com/apiv1/pro' }
     req = urllib.request.Request(url, headers=header)
 
     try:
