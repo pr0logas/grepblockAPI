@@ -6,6 +6,8 @@ from flask_limiter.util import get_remote_address
 from flask_restful import Resource, Api
 from gevent.pywsgi import WSGIServer
 from mongoAuth import auth
+from time import gmtime, strftime
+import urllib.request
 
 # Init MongoDB
 MC = pymongo.MongoClient(auth['host'] + auth['port'])
@@ -22,6 +24,23 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["6/minute"]
     )
+
+def webRequest(argument):
+    result = notFound
+    url = ('https://grepblock.com/parsedb?query='+argument)
+    header = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) grepblock.com/api/free/' }
+    req = urllib.request.Request(url, headers=header)
+
+    try:
+        response = urllib.request.urlopen(req)
+        res = response.read()
+        result = res
+    except:
+        timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+        print(url + timeSet + " FATAL! Error occured!")
+
+    return result
+
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastblock?assetname=adeptio '''
 class GetLastBlock(Resource):
@@ -69,6 +88,7 @@ class GetBlockTimeByHeight(Resource):
         except IndexError:
             return notFound
 
+
 ''' http://127.0.0.1:5000/apiv1/free/getlastparsedwallet?assetname=adeptio '''
 class LastParsedWallet(Resource):
     @limiter.limit("6/minute")
@@ -81,16 +101,23 @@ class LastParsedWallet(Resource):
             return notFound
 
 ''' http://127.0.0.1:5000/apiv1/free/findbyblocknum?assetname=adeptio&num=123 '''
+''' http://127.0.0.1:5000/apiv1/free/findbyblocknum?assetname=all&num=123 '''
 class Block(Resource):
     @limiter.limit("6/minute")
     def get(self):
         blockNum = request.args.get('num')
         blockchain = request.args.get('assetname')
-        try:
-            searchBlock = MC[blockchain]['blocks'].find({'block' : int(blockNum)},{ "_id" : 0})
-            return (searchBlock[0])
-        except IndexError:
-            return notFound
+        if blockchain == 'all':
+            res = webRequest(blockNum)
+            jsonData = json.loads(res)
+            return jsonData
+
+        else:
+            try:
+                searchBlock = MC[blockchain]['blocks'].find({'block' : int(blockNum)},{ "_id" : 0})
+                return (searchBlock[0])
+            except IndexError:
+                return notFound
 
 ''' http://127.0.0.1:5000/apiv1/free/findbyblockhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
 class Blockhash(Resource):
@@ -128,6 +155,7 @@ class Wallet(Resource):
         except IndexError:
             return notFound
 
+''' http://127.0.0.1:5000/apiv1/free/findbyblocknum?assetname=all&num=123 '''
 
 # Routes
 api.add_resource(GetLastBlock, '/getlastblock') 
