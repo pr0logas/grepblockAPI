@@ -119,21 +119,24 @@ class LastParsedWallet(Resource):
 ''' http://127.0.0.1:5002/apiv1/pro/findbyblocknum?assetname=adeptio&num=123 '''
 ''' http://127.0.0.1:5002/apiv1/pro/findbyblocknum?assetname=all&num=123 '''
 class Block(Resource):
-    @limiter.limit("600/minute")
+    @limiter.limit("6/minute")
     def get(self):
         blockNum = request.args.get('num')
         blockchain = request.args.get('assetname')
-        if blockchain == 'all':
-            res = webRequest(blockNum)
-            jsonData = json.loads(res)
-            return jsonData
+        if blockNum.isdigit():
+            if blockchain == 'all':
+                res = webRequest(blockNum)
+                jsonData = json.loads(res)
+                return jsonData
 
+            else:
+                try:
+                    searchBlock = MC[blockchain]['blocks'].find({'block' : int(blockNum)},{ "_id" : 0})
+                    return (searchBlock[0])
+                except IndexError:
+                    return notFound
         else:
-            try:
-                searchBlock = MC[blockchain]['blocks'].find({'block' : int(blockNum)},{ "_id" : 0})
-                return (searchBlock[0])
-            except IndexError:
-                return notFound
+            return (json.loads('{"ERROR" : "num=Only integers are allowed"}'))
 
 ''' http://127.0.0.1:5002/apiv1/pro/findbyblockhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
 class Blockhash(Resource):

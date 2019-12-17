@@ -107,17 +107,20 @@ class Block(Resource):
     def get(self):
         blockNum = request.args.get('num')
         blockchain = request.args.get('assetname')
-        if blockchain == 'all':
-            res = webRequest(blockNum)
-            jsonData = json.loads(res)
-            return jsonData
+        if blockNum.isdigit():
+            if blockchain == 'all':
+                res = webRequest(blockNum)
+                jsonData = json.loads(res)
+                return jsonData
 
+            else:
+                try:
+                    searchBlock = MC[blockchain]['blocks'].find({'block' : int(blockNum)},{ "_id" : 0})
+                    return (searchBlock[0])
+                except IndexError:
+                    return notFound
         else:
-            try:
-                searchBlock = MC[blockchain]['blocks'].find({'block' : int(blockNum)},{ "_id" : 0})
-                return (searchBlock[0])
-            except IndexError:
-                return notFound
+            return (json.loads('{"ERROR" : "num=Only integers are allowed"}'))
 
 ''' http://127.0.0.1:5000/apiv1/free/findbyblockhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
 class Blockhash(Resource):
