@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+#:: Author: Tomas Adnriekus
+#:: 2019-12-18
+
 import pymongo, json
 from flask import Flask, request, jsonify
 from flask_limiter import Limiter

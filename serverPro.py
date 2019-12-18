@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+#:: Author: Tomas Adnriekus
+#:: 2019-12-18
+
 import pymongo, json
 from flask import Flask, request, jsonify
 from flask_limiter import Limiter
@@ -126,9 +129,22 @@ class Block(Resource):
         if blockNum.isdigit():
             if blockchain == 'all':
                 res = webRequest(blockNum)
-                jsonData = json.loads(res)
-                return jsonData
-
+                # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
+                # Mongo gives us bytes of long string
+                try:
+                    jsonData = json.loads(res)
+                    return jsonData
+                except:
+                    timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                    print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
+                    numLong = re.search(rb'NumberLong.*', res)
+                    resul = (numLong.group(0))
+                    onlyDigits = (re.findall(rb'\d+', resul)[0])
+                    final = (str(onlyDigits))
+                    aggregate = bytes('"' + final + '" }', encoding='utf8')
+                    filedata = res.replace(bytes(resul), bytes(aggregate))
+                    jsonData = json.loads(filedata)
+                    return jsonData
             else:
                 try:
                     searchBlock = MC[blockchain]['blocks'].find({'block' : int(blockNum)},{ "_id" : 0})
