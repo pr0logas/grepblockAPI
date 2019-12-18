@@ -118,9 +118,9 @@ class Block(Resource):
                     return jsonData
                 except:
                     print(res)
-                    numLong = re.search(r'NumberLong.*', res)
+                    numLong = re.search(rb'NumberLong.*', res)
                     resul = (numLong.group(0))
-                    onlyDigits = (re.findall(r'\d+', resul)[0])
+                    onlyDigits = (re.findall(rb'\d+', resul)[0])
                     final = (str(onlyDigits))
                     aggregate = '"' + final + '" }'
                     filedata = text.replace(resul, aggregate)
