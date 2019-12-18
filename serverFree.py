@@ -113,7 +113,6 @@ class Block(Resource):
                 res = webRequest(blockNum)
                 # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
                 try:
-                    print(res)
                     jsonData = json.loads(res)
                     return jsonData
                 except:
@@ -123,7 +122,7 @@ class Block(Resource):
                     onlyDigits = (re.findall(rb'\d+', resul)[0])
                     final = (str(onlyDigits))
                     aggregate = '"' + final + '" }'
-                    filedata = text.replace(resul, aggregate)
+                    filedata = res.replace(resul, aggregate)
                     jsonData = json.loads(filedata)
                     return jsonData
             else:
