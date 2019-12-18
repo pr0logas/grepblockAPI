@@ -8,6 +8,7 @@ from gevent.pywsgi import WSGIServer
 from mongoAuth import auth
 from time import gmtime, strftime
 import urllib.request
+import re
 
 # Init MongoDB
 MC = pymongo.MongoClient(auth['host'] + auth['port'])
