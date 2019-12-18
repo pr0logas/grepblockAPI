@@ -110,9 +110,19 @@ class Block(Resource):
         if blockNum.isdigit():
             if blockchain == 'all':
                 res = webRequest(blockNum)
-                jsonData = json.loads(res)
-                return jsonData
-
+                # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
+                try:
+                    jsonData = json.loads(res)
+                    return jsonData
+                except:
+                    numLong = re.search(r'NumberLong.*', text)
+                    resul = (numLong.group(0))
+                    onlyDigits = (re.findall(r'\d+', resul)[0])
+                    final = (str(onlyDigits))
+                    aggregate = '"' + final + '" }'
+                    filedata = text.replace(resul, aggregate)
+                    jsonData = json.loads(filedata)
+                    return jsonData
             else:
                 try:
                     searchBlock = MC[blockchain]['blocks'].find({'block' : int(blockNum)},{ "_id" : 0})
