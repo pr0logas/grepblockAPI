@@ -112,11 +112,12 @@ class Block(Resource):
             if blockchain == 'all':
                 res = webRequest(blockNum)
                 # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
+                # Mongo gives us bytes of long string
                 try:
                     jsonData = json.loads(res)
                     return jsonData
                 except:
-                    print(res)
+                    print('***Failed to return JSON. Probably - "NumberLong" problem.***')
                     numLong = re.search(rb'NumberLong.*', res)
                     resul = (numLong.group(0))
                     onlyDigits = (re.findall(rb'\d+', resul)[0])
