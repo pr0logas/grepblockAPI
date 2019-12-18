@@ -122,7 +122,7 @@ class Block(Resource):
                     onlyDigits = (re.findall(rb'\d+', resul)[0])
                     final = (str(onlyDigits))
                     aggregate = '"' + final + '" }'
-                    filedata = res.replace(resul, aggregate)
+                    filedata = res.replace(bytes(resul), bytes(aggregate))
                     jsonData = json.loads(filedata)
                     return jsonData
             else:
