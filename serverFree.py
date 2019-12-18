@@ -116,7 +116,7 @@ class Block(Resource):
                     jsonData = json.loads(res)
                     return jsonData
                 except:
-                    numLong = re.search(r'NumberLong.*', text)
+                    numLong = re.search(r'NumberLong.*', res)
                     resul = (numLong.group(0))
                     onlyDigits = (re.findall(r'\d+', resul)[0])
                     final = (str(onlyDigits))
