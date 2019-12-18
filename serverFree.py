@@ -117,7 +117,8 @@ class Block(Resource):
                     jsonData = json.loads(res)
                     return jsonData
                 except:
-                    print('***Failed to return JSON. Probably - "NumberLong" problem.***')
+                    timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                    print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
                     numLong = re.search(rb'NumberLong.*', res)
                     resul = (numLong.group(0))
                     onlyDigits = (re.findall(rb'\d+', resul)[0])
