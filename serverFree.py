@@ -47,7 +47,7 @@ def webRequest(argument):
     return result
 
 def checkInvalidChars(value):
-    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:].,')
     if (regex.search(value) == None):
         return 'OK'
     else:
