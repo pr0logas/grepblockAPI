@@ -6,6 +6,7 @@ import pymongo, json
 from flask import Flask, request, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.contrib.fixers import ProxyFix
 from flask_restful import Resource, Api
 from gevent.pywsgi import WSGIServer
 from mongoAuth import auth
@@ -28,6 +29,7 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["6/minute"]
     )
+app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
 
 def webRequest(argument):
     result = notFound
