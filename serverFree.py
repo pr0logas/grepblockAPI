@@ -49,7 +49,6 @@ def webRequest(argument):
 
 ''' http://127.0.0.1:5000/apiv1/free/generalsearch?assetname=all&anyvalue=123 '''
 class GlobalSearch(Resource):
-    @limiter.limit("6/minute")
     def get(self):
         value = request.args.get('anyvalue')
         blockchain = request.args.get('assetname')
@@ -76,7 +75,6 @@ class GlobalSearch(Resource):
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastblock?assetname=adeptio '''
 class GetLastBlock(Resource):
-    @limiter.limit("6/minute")
     def get(self):
         blockchain = request.args.get('assetname')
         try:
@@ -87,7 +85,6 @@ class GetLastBlock(Resource):
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastdifficulty?assetname=adeptio '''
 class GetLastDifficulty(Resource):
-    @limiter.limit("6/minute")
     def get(self):
         blockchain = request.args.get('assetname')
         try:
@@ -98,7 +95,6 @@ class GetLastDifficulty(Resource):
 
 ''' http://127.0.0.1:5000/apiv1/free/getblockbyhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
 class GetBlockByHash(Resource):
-    @limiter.limit("6/minute")
     def get(self):
         blockH = request.args.get('blockhash')
         blockchain = request.args.get('assetname')
@@ -109,7 +105,6 @@ class GetBlockByHash(Resource):
             return notFound
 ''' http://127.0.0.1:5000/apiv1/free/getblocktimebynum?assetname=adeptio&num=123 '''
 class GetBlockTimeByHeight(Resource):
-    @limiter.limit("6/minute")
     def get(self):
         block = request.args.get('num')
         blockchain = request.args.get('assetname')
@@ -121,7 +116,6 @@ class GetBlockTimeByHeight(Resource):
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastparsedwallet?assetname=adeptio '''
 class LastParsedWallet(Resource):
-    @limiter.limit("6/minute")
     def get(self):
         blockchain = request.args.get('assetname')
         try:
@@ -133,7 +127,6 @@ class LastParsedWallet(Resource):
 ''' http://127.0.0.1:5000/apiv1/free/findbyblocknum?assetname=adeptio&num=123 '''
 ''' http://127.0.0.1:5000/apiv1/free/findbyblocknum?assetname=all&num=123 '''
 class Block(Resource):
-    @limiter.limit("6/minute")
     def get(self):
         blockNum = request.args.get('num')
         blockchain = request.args.get('assetname')
@@ -167,7 +160,6 @@ class Block(Resource):
 
 ''' http://127.0.0.1:5000/apiv1/free/findbyblockhash?assetname=adeptio&blockhash=0000000003115ddfadc6d8b13aff05f0ff76655183a2c3c92a39253bb294f2b9 '''
 class Blockhash(Resource):
-    @limiter.limit("6/minute")
     def get(self):
         blockHash = request.args.get('blockhash')
         blockchain = request.args.get('assetname')
@@ -179,7 +171,6 @@ class Blockhash(Resource):
 
 ''' http://127.0.0.1:5000/apiv1/free/findbytransaction?assetname=adeptio&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
 class Transaction(Resource):
-    @limiter.limit("6/minute")
     def get(self):
         transaction = request.args.get('txid')
         blockchain = request.args.get('assetname')
@@ -191,7 +182,6 @@ class Transaction(Resource):
 
 ''' http://127.0.0.1:5000/apiv1/free/findbywallet?assetname=adeptio&addr=AV12hgJ8VzCt9ANmYCN6rbBLEYPt9VJTP6 '''
 class Wallet(Resource):
-    @limiter.limit("6/minute")
     def get(self):
         walletAddr = request.args.get('addr')
         blockchain = request.args.get('assetname')
