@@ -53,9 +53,10 @@ class GlobalSearch(Resource):
         value = request.args.get('anyvalue')
         blockchain = request.args.get('assetname')
         if blockchain == 'all':
-            res = webRequest(value)
+            return webRequest(value)
             # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
             # Mongo gives us bytes of long string
+            '''
             try:
                 jsonData = json.loads(res)
                 return jsonData
@@ -73,7 +74,7 @@ class GlobalSearch(Resource):
                 return jsonData
         else:
             return (json.loads('{"ERROR" : "this method is for global search only"}'))
-
+'''
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastblock?assetname=adeptio '''
 class GetLastBlock(Resource):
