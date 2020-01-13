@@ -5,7 +5,7 @@
 import pymongo, json
 from flask import Flask, request, jsonify
 from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from flask_limiter.util import get_remote_address, get_ipaddr
 from werkzeug.contrib.fixers import ProxyFix
 from flask_restful import Resource, Api
 from gevent.pywsgi import WSGIServer
@@ -17,10 +17,13 @@ import re
 # Init MongoDB
 MC = pymongo.MongoClient(auth['host'] + auth['port'])
 
+def get_real_ip():
+    return (request.remote_addr)
+
 # Flask rules
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
-limiter = Limiter(app, key_func=get_remote_address, default_limits=["6/minute"])
+limiter = Limiter(app, key_func=get_real_ip, default_limits=["6/minute"])
 app.url_map.strict_slashes = False
 api = Api(app, prefix="/apiv1/free")
 
@@ -76,7 +79,6 @@ class GetBlockByHash(Resource):
             return (searchLb[0])
         except IndexError:
             return notFound
-
 ''' http://127.0.0.1:5000/apiv1/free/getblocktimebynum?assetname=adeptio&num=123 '''
 class GetBlockTimeByHeight(Resource):
     @limiter.limit("6/minute")
@@ -88,7 +90,6 @@ class GetBlockTimeByHeight(Resource):
             return (searchLb[0])
         except IndexError:
             return notFound
-
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastparsedwallet?assetname=adeptio '''
 class LastParsedWallet(Resource):
@@ -175,15 +176,15 @@ class Wallet(Resource):
 ''' http://127.0.0.1:5000/apiv1/free/findbyblocknum?assetname=all&num=123 '''
 
 # Routes
-api.add_resource(GetLastBlock, '/getlastblock') 
-api.add_resource(GetLastDifficulty, '/getlastdifficulty') 
+api.add_resource(GetLastBlock, '/getlastblock')
+api.add_resource(GetLastDifficulty, '/getlastdifficulty')
 api.add_resource(LastParsedWallet, '/getlastparsedwallet')
-api.add_resource(GetBlockByHash, '/getblockbyhash') 
-api.add_resource(GetBlockTimeByHeight, '/getblocktimebynum') 
-api.add_resource(Block, '/findbyblocknum') 
-api.add_resource(Blockhash, '/findbyblockhash') 
-api.add_resource(Transaction, '/findbytransaction') 
-api.add_resource(Wallet, '/findbywallet') 
+api.add_resource(GetBlockByHash, '/getblockbyhash')
+api.add_resource(GetBlockTimeByHeight, '/getblocktimebynum')
+api.add_resource(Block, '/findbyblocknum')
+api.add_resource(Blockhash, '/findbyblockhash')
+api.add_resource(Transaction, '/findbytransaction')
+api.add_resource(Wallet, '/findbywallet')
 
 # Serve the high performance http server
 if __name__ == '__main__':
