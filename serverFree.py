@@ -53,17 +53,15 @@ class GlobalSearch(Resource):
         value = request.args.get('anyvalue')
         blockchain = request.args.get('assetname')
         if blockchain == 'all':
-            return webRequest(value)
+            res = webRequest(value)
             # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
             # Mongo gives us bytes of long string
-            '''
             try:
                 jsonData = json.loads(res)
                 return jsonData
             except:
                 timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-                print(
-                    str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
+                print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
                 numLong = re.search(rb'NumberLong.*', res)
                 resul = (numLong.group(0))
                 onlyDigits = (re.findall(rb'\d+', resul) [0])
@@ -74,7 +72,6 @@ class GlobalSearch(Resource):
                 return jsonData
         else:
             return (json.loads('{"ERROR" : "this method is for global search only"}'))
-'''
 
 ''' http://127.0.0.1:5000/apiv1/free/getlastblock?assetname=adeptio '''
 class GetLastBlock(Resource):
