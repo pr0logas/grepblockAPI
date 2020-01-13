@@ -46,6 +46,35 @@ def webRequest(argument):
     return result
 
 
+''' http://127.0.0.1:5000/apiv1/free/generalsearch?assetname=all&anyvalue=123 '''
+class GlobalSearch(Resource):
+    @limiter.limit("6/minute")
+    def get(self):
+        value = request.args.get('anyvalue')
+        blockchain = request.args.get('assetname')
+        if blockchain == 'all':
+            res = webRequest(value)
+            # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
+            # Mongo gives us bytes of long string
+            try:
+                jsonData = json.loads(res)
+                return jsonData
+            except:
+                timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                print(
+                    str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
+                numLong = re.search(rb'NumberLong.*', res)
+                resul = (numLong.group(0))
+                onlyDigits = (re.findall(rb'\d+', resul) [0])
+                final = (str(onlyDigits))
+                aggregate = bytes('"' + final + '" }', encoding='utf8')
+                filedata = res.replace(bytes(resul), bytes(aggregate))
+                jsonData = json.loads(filedata)
+                return jsonData
+        else:
+            return (json.loads('{"ERROR" : "this method is for global search only"}'))
+
+
 ''' http://127.0.0.1:5000/apiv1/free/getlastblock?assetname=adeptio '''
 class GetLastBlock(Resource):
     @limiter.limit("6/minute")
@@ -176,6 +205,7 @@ class Wallet(Resource):
 ''' http://127.0.0.1:5000/apiv1/free/findbyblocknum?assetname=all&num=123 '''
 
 # Routes
+api.add_resource(GlobalSearch, '/globalsearch')
 api.add_resource(GetLastBlock, '/getlastblock')
 api.add_resource(GetLastDifficulty, '/getlastdifficulty')
 api.add_resource(LastParsedWallet, '/getlastparsedwallet')
