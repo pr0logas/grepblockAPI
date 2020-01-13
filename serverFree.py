@@ -18,7 +18,7 @@ import re
 MC = pymongo.MongoClient(auth['host'] + auth['port'])
 
 def get_real_ip():
-    print (request.remote_addr)
+    print (request.remote_addr) + 'Client initiated request ->'
     return (request.remote_addr)
 
 # Flask rules
@@ -46,6 +46,12 @@ def webRequest(argument):
 
     return result
 
+def checkInvalidChars(value):
+    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+    if (regex.search(value) == None):
+        return 'OK'
+    else:
+        return 'FAIL'
 
 ''' http://127.0.0.1:5000/apiv1/free/generalsearch?assetname=all&anyvalue=123 '''
 class GlobalSearch(Resource):
@@ -53,23 +59,26 @@ class GlobalSearch(Resource):
         value = request.args.get('anyvalue')
         blockchain = request.args.get('assetname')
         if blockchain == 'all':
-            res = webRequest(value)
-            # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
-            # Mongo gives us bytes of long string
-            try:
-                jsonData = json.loads(res)
-                return jsonData
-            except:
-                timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-                print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
-                numLong = re.search(rb'NumberLong.*', res)
-                resul = (numLong.group(0))
-                onlyDigits = (re.findall(rb'\d+', resul) [0])
-                final = (str(onlyDigits))
-                aggregate = bytes('"' + final + '" }', encoding='utf8')
-                filedata = res.replace(bytes(resul), bytes(aggregate))
-                jsonData = json.loads(filedata)
-                return jsonData
+            if checkInvalidChars(value) == 'OK':
+                res = webRequest(value)
+                # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
+                # Mongo gives us bytes of long string
+                try:
+                    jsonData = json.loads(res)
+                    return jsonData
+                except:
+                    timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                    print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
+                    numLong = re.search(rb'NumberLong.*', res)
+                    resul = (numLong.group(0))
+                    onlyDigits = (re.findall(rb'\d+', resul) [0])
+                    final = (str(onlyDigits))
+                    aggregate = bytes('"' + final + '" }', encoding='utf8')
+                    filedata = res.replace(bytes(resul), bytes(aggregate))
+                    jsonData = json.loads(filedata)
+                    return jsonData
+            else:
+                return (json.loads('{"ERROR" : "invalid symbols inside search field"}'))
         else:
             return (json.loads('{"ERROR" : "this method is for global search only"}'))
 
