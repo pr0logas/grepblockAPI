@@ -18,7 +18,7 @@ import re
 MC = pymongo.MongoClient(auth['host'] + auth['port'])
 
 def get_real_ip():
-    print str((request.remote_addr) + 'Client initiated request ->')
+    print (str(request.remote_addr) + 'Client initiated request ->')
     return (request.remote_addr)
 
 # Flask rules
