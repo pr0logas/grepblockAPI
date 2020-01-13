@@ -30,6 +30,13 @@ api = Api(app, prefix="/apiv1/free")
 
 notFound = json.loads('{"ERROR" : "No data found"}')
 
+def checkInvalidChars(value):
+    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:,.}{+]')
+    if (regex.search(value) == None):
+        return 'OK'
+    else:
+        return 'FAIL'
+
 def webRequest(argument):
     result = notFound
     url = ('https://grepblock.com/parsedb?query='+argument)
@@ -45,13 +52,6 @@ def webRequest(argument):
         print(url + timeSet + " FATAL! Error occured!")
 
     return result
-
-def checkInvalidChars(value):
-    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:,.}{+]')
-    if (regex.search(value) == None):
-        return 'OK'
-    else:
-        return 'FAIL'
 
 ''' http://127.0.0.1:5000/apiv1/free/generalsearch?assetname=all&anyvalue=123 '''
 class GlobalSearch(Resource):
