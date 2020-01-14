@@ -67,7 +67,7 @@ class GlobalSearch(Resource):
                     jsonData = json.loads(res)
                     return jsonData
                 except:
-                    jsonData = ''
+                    workingData = ''
                     test = re.search(rb'NumberLong', res)
                     if test != None:
                         timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
@@ -79,9 +79,10 @@ class GlobalSearch(Resource):
                         final = (str(onlyDigits))
                         aggregate = bytes('"' + final + '"', encoding='utf8')
                         print(aggregate)
-                        filedata = res.replace(bytes(resul), bytes(aggregate))
-                        jsonData = json.loads(filedata.decode("utf-8"))
-                    return jsonData
+                        workingData = res.replace(bytes(resul), bytes(aggregate))
+
+                    workingData = json.loads(filedata.decode("utf-8"))
+                    return workingData
             else:
                 return (json.loads('{"ERROR" : "invalid symbols inside search field"}'))
         else:
