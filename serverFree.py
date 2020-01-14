@@ -84,8 +84,7 @@ class GlobalSearch(Resource):
                             aggregate = bytes('"' + final + '"', encoding='utf8')
                             print(aggregate)
                             filedata = res.replace(bytes(resul), bytes(aggregate))
-                            print (filedata)
-                            jsonData = json.loads(filedata)
+                            jsonData = json.loads(filedata.decode("utf-8"))
                     return jsonData
             else:
                 return (json.loads('{"ERROR" : "invalid symbols inside search field"}'))
