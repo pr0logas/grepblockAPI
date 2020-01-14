@@ -68,7 +68,7 @@ class GlobalSearch(Resource):
                     return jsonData
                 except:
                     regex = re.compile(res)
-                    qq = (regex.search('NumberLong'))
+                    qq = (regex.search(str('NumberLong')))
                     print(qq)
 
                     if regex.search('NumberLong') == None:
