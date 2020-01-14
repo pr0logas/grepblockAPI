@@ -83,6 +83,7 @@ class GlobalSearch(Resource):
                             final = (str(onlyDigits))
                             aggregate = bytes('"' + final + '" }', encoding='utf8')
                             filedata = res.replace(bytes(resul), bytes(aggregate))
+                            print(filedata)
                             jsonData = json.loads(filedata)
                     return jsonData
             else:
