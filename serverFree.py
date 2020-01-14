@@ -67,15 +67,23 @@ class GlobalSearch(Resource):
                     jsonData = json.loads(res)
                     return jsonData
                 except:
-                    timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-                    print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
-                    numLong = re.search(rb'NumberLong.*', res)
-                    resul = (numLong.group(0))
-                    onlyDigits = (re.findall(rb'\d+', resul) [0])
-                    final = (str(onlyDigits))
-                    aggregate = bytes('"' + final + '" }', encoding='utf8')
-                    filedata = res.replace(bytes(resul), bytes(aggregate))
-                    jsonData = json.loads(filedata)
+                    regex = re.compile('NumberLong')
+                    status = True
+                    jsonData = ''
+
+                    while status == True:
+                        if (regex.search(str(res)) == None):
+                            status = False
+                        else:
+                            timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                            print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
+                            numLong = re.search(rb'NumberLong.*?".*?"?"?\)', res)
+                            resul = (numLong.group(0))
+                            onlyDigits = (re.findall(rb'\d+', resul) [0])
+                            final = (str(onlyDigits))
+                            aggregate = bytes('"' + final + '" }', encoding='utf8')
+                            filedata = res.replace(bytes(resul), bytes(aggregate))
+                            jsonData = json.loads(filedata)
                     return jsonData
             else:
                 return (json.loads('{"ERROR" : "invalid symbols inside search field"}'))
@@ -150,7 +158,7 @@ class Block(Resource):
                 except:
                     timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
                     print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
-                    numLong = re.search(rb'NumberLong.*', res)
+                    numLong = re.search(rb'NumberLong.*?".*?"?"?\)', res)
                     resul = (numLong.group(0))
                     onlyDigits = (re.findall(rb'\d+', resul)[0])
                     final = (str(onlyDigits))
