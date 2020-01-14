@@ -71,7 +71,7 @@ class GlobalSearch(Resource):
                     jsonData = bytes('NumberLong', encoding='utf8')
 
                     while True:
-                        if (regex.search(bytes(jsonData)) == None):
+                        if (regex.search(str(jsonData)) == None):
                             break
                         else:
                             timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
