@@ -67,21 +67,20 @@ class GlobalSearch(Resource):
                     jsonData = json.loads(res)
                     return jsonData
                 except:
-                    qq = re.search(rb'NumberLongas', res)
-                    print(qq)
-
-                    timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-                    print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
-                    numLong = re.search(rb'NumberLong.*?".*?"?"?\)', res)
-                    print(numLong)
-                    resul = (numLong.group(0))
-                    onlyDigits = (re.findall(rb'\d+', resul) [0])
-                    final = (str(onlyDigits))
-                    aggregate = bytes('"' + final + '"', encoding='utf8')
-                    print(aggregate)
-                    filedata = res.replace(bytes(resul), bytes(aggregate))
-                    jsonData = json.loads(filedata.decode("utf-8"))
-
+                    jsonData = ''
+                    test = re.search(rb'NumberLong', res)
+                    if test != None:
+                        timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                        print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
+                        numLong = re.search(rb'NumberLong.*?".*?"?"?\)', res)
+                        print(numLong)
+                        resul = (numLong.group(0))
+                        onlyDigits = (re.findall(rb'\d+', resul) [0])
+                        final = (str(onlyDigits))
+                        aggregate = bytes('"' + final + '"', encoding='utf8')
+                        print(aggregate)
+                        filedata = res.replace(bytes(resul), bytes(aggregate))
+                        jsonData = json.loads(filedata.decode("utf-8"))
                     return jsonData
             else:
                 return (json.loads('{"ERROR" : "invalid symbols inside search field"}'))
