@@ -68,7 +68,7 @@ class GlobalSearch(Resource):
                     return jsonData
                 except:
                     regex = re.compile('NumberLong')
-                    jsonData = bytes('NumberLong', encoding='utf8')
+                    jsonData = res
 
                     while True:
                         if (regex.search(str(jsonData)) == None):
@@ -85,6 +85,7 @@ class GlobalSearch(Resource):
                             print(aggregate)
                             filedata = res.replace(bytes(resul), bytes(aggregate))
                             jsonData = json.loads(filedata.decode("utf-8"))
+                            
                     return jsonData
             else:
                 return (json.loads('{"ERROR" : "invalid symbols inside search field"}'))
