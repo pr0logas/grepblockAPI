@@ -68,13 +68,12 @@ class GlobalSearch(Resource):
                     return jsonData
                 except:
                     regex = re.compile('NumberLong')
-                    jsonData = ''
+                    jsonData = 'NumberLong'
 
                     while True:
-                        if (regex.search(str(res)) == None):
+                        if (regex.search(str(jsonData)) == None):
                             break
                         else:
-                            print(regex.search(str(res)))
                             timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
                             print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
                             numLong = re.search(rb'NumberLong.*?".*?"?"?\)', res)
