@@ -70,8 +70,12 @@ class GlobalSearch(Resource):
                     workingData = res
                     test = re.search(rb'NumberLong', workingData)
                     print(test, ' 1')
+
                     while test != None:
                         test = re.search(rb'NumberLong', workingData)
+                        if test == None:
+                            break
+            
                         print(test, ' 2')
                         timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
                         print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
