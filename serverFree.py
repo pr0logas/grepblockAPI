@@ -77,12 +77,12 @@ class GlobalSearch(Resource):
                         else:
                             timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
                             print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
-                            numLong = re.search(r'NumberLong.*?".*?"?"?\)', res)
+                            numLong = re.search(rb'NumberLong.*?".*?"?"?\)', res)
                             resul = (numLong.group(0))
-                            onlyDigits = (re.findall(r'\d+', resul) [0])
+                            onlyDigits = (re.findall(rb'\d+', resul) [0])
                             final = (str(onlyDigits))
-                            aggregate = str('"' + final + '" }', encoding='utf8')
-                            filedata = res.replace(str(resul), str(aggregate))
+                            aggregate = bytes('"' + final + '" }', encoding='utf8')
+                            filedata = res.replace(bytes(resul), bytes(aggregate))
                             print(filedata)
                             jsonData = json.loads(filedata)
                     return jsonData
