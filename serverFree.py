@@ -67,7 +67,7 @@ class GlobalSearch(Resource):
                     jsonData = json.loads(res)
                     return jsonData
                 except:
-                    qq = re.search(rb'NumberLong', res)
+                    qq = re.search(rb'NumberLongas', res)
                     print(qq)
 
                     timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
