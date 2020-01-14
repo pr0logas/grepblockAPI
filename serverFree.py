@@ -81,7 +81,7 @@ class GlobalSearch(Resource):
                             resul = (numLong.group(0))
                             onlyDigits = (re.findall(rb'\d+', resul) [0])
                             final = (str(onlyDigits))
-                            aggregate = bytes('"' + final + '" }', encoding='utf8')
+                            aggregate = bytes('"' + final + '"', encoding='utf8')
                             filedata = res.replace(bytes(resul), bytes(aggregate))
                             print(filedata)
                             jsonData = json.loads(filedata)
