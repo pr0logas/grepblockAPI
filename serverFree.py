@@ -68,7 +68,7 @@ class GlobalSearch(Resource):
                     return jsonData
                 except:
                     qq = re.search(rb'NumberLong', res)
-                    print(list(qq))
+                    print(qq)
 
                     timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
                     print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
