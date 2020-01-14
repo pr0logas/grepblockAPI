@@ -158,16 +158,26 @@ class Block(Resource):
                     jsonData = json.loads(res)
                     return jsonData
                 except:
-                    timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-                    print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
-                    numLong = re.search(rb'NumberLong.*?".*?"?"?\)', res)
-                    resul = (numLong.group(0))
-                    onlyDigits = (re.findall(rb'\d+', resul)[0])
-                    final = (str(onlyDigits))
-                    aggregate = bytes('"' + final + '" }', encoding='utf8')
-                    filedata = res.replace(bytes(resul), bytes(aggregate))
-                    jsonData = json.loads(filedata)
-                    return jsonData
+                    workingData = res
+                    test = re.search(rb'NumberLong', workingData)
+
+                    while test != None:
+                        test = re.search(rb'NumberLong', workingData)
+
+                        if test == None:
+                            break
+
+                        timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                        print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
+                        numLong = re.search(rb'NumberLong.*?".*?"?"?\)', workingData)
+                        resul = (numLong.group(0))
+                        onlyDigits = (re.findall(rb'\d+', resul) [0])
+                        final = (str(onlyDigits))
+                        aggregate = bytes('"' + final + '"', encoding='utf8')
+                        workingData = workingData.replace(bytes(resul), bytes(aggregate))
+
+                    fixedJson = json.loads(workingData.decode("utf-8"))
+                    return fixedJson
             else:
                 try:
                     searchBlock = MC[blockchain]['blocks'].find({'block' : int(blockNum)},{ "_id" : 0})
