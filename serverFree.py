@@ -68,10 +68,10 @@ class GlobalSearch(Resource):
                     return jsonData
                 except:
                     regex = re.compile('NumberLong')
-                    jsonData = 'NumberLong'
+                    jsonData = bytes('NumberLong')
 
                     while True:
-                        if (regex.search(str(jsonData)) == None):
+                        if (regex.search(bytes(jsonData)) == None):
                             break
                         else:
                             timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
