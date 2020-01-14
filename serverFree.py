@@ -69,14 +69,14 @@ class GlobalSearch(Resource):
                 except:
                     workingData = res
                     test = re.search(rb'NumberLong', workingData)
-                    print(test + str('1'))
+                    print(test, ' 1')
                     while test != None:
                         test = re.search(rb'NumberLong', workingData)
-                        print(test + str('2'))
+                        print(test, ' 2')
                         timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
                         print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
                         numLong = re.search(rb'NumberLong.*?".*?"?"?\)', workingData)
-                        print(str(numLong) + str('3'))
+                        print(numLong, ' 3')
                         resul = (numLong.group(0))
                         onlyDigits = (re.findall(rb'\d+', resul) [0])
                         final = (str(onlyDigits))
