@@ -72,9 +72,9 @@ class GlobalSearch(Resource):
 
                     while True:
                         if (regex.search(str(res)) == None):
-                            print(regex.search(str(res)))
                             break
                         else:
+                            print(regex.search(str(res)))
                             timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
                             print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
                             numLong = re.search(rb'NumberLong.*?".*?"?"?\)', res)
@@ -83,7 +83,6 @@ class GlobalSearch(Resource):
                             final = (str(onlyDigits))
                             aggregate = bytes('"' + final + '"', encoding='utf8')
                             filedata = res.replace(bytes(resul), bytes(aggregate))
-                            print(filedata)
                             jsonData = json.loads(filedata)
                     return jsonData
             else:
