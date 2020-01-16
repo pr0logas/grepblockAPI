@@ -220,8 +220,6 @@ class Wallet(Resource):
         except IndexError:
             return notFound
 
-''' http://127.0.0.1:5000/apiv1/free/findbyblocknum?assetname=all&num=123 '''
-
 # Routes
 api.add_resource(GlobalSearch, '/globalsearch')
 api.add_resource(GetLastBlock, '/getlastblock')
