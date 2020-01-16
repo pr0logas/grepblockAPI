@@ -51,7 +51,7 @@ def checkInvalidChars(value):
 def webRequest(argument):
     result = notFound
     url = ('https://grepblock.com/parsedb?query='+argument)
-    header = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) grepblock.com/apiv1/free' }
+    header = { 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) grepblock.com/apiv1/basic' }
     req = urllib.request.Request(url, headers=header)
 
     try:
@@ -308,7 +308,7 @@ class Wallet(Resource):
             return notFound
 
 # Routes
-api.add_resource(GlobalSearch, '/globalsearch')
+#api.add_resource(GlobalSearch, '/globalsearch')
 api.add_resource(GetLastBlock, '/getlastblock')
 api.add_resource(GetLastDifficulty, '/getlastdifficulty')
 api.add_resource(LastParsedWallet, '/getlastparsedwallet')
