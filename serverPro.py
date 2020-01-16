@@ -296,6 +296,7 @@ class Transaction(Resource):
             return (json.loads('{"ERROR" : "txid=Only string are allowed"}'))
 
 ''' http://127.0.0.1:5002/apiv1/pro/findbywallet?assetname=adeptio&addr=AV12hgJ8VzCt9ANmYCN6rbBLEYPt9VJTP6 '''
+''' http://127.0.0.1:5002/apiv1/pro/findbywallet?assetname=all&addr=AV12hgJ8VzCt9ANmYCN6rbBLEYPt9VJTP6 '''
 class Wallet(Resource):
     @auth.login_required
     def get(self):
