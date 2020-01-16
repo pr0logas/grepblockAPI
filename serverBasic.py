@@ -37,7 +37,7 @@ def verify(username, password):
 # Flask rules
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
-limiter = Limiter(app, key_func=get_real_ip, default_limits=["6/minute"])
+limiter = Limiter(app, key_func=get_real_ip, default_limits=["60/minute"])
 app.url_map.strict_slashes = False
 api = Api(app, prefix="/apiv1/basic")
 
@@ -251,16 +251,49 @@ class Blockhash(Resource):
             return (json.loads('{"ERROR" : "hash=Only string are allowed"}'))
 
 ''' http://127.0.0.1:5001/apiv1/basic/findbytransaction?assetname=adeptio&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
+''' http://127.0.0.1:5001/apiv1/basic/findbytransaction?assetname=all&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
 class Transaction(Resource):
     @auth.login_required
     def get(self):
         transaction = request.args.get('txid')
         blockchain = request.args.get('assetname')
-        try:
-            searchTxid = MC[blockchain]['blocks'].find({'tx' : transaction},{ "_id" : 0})
-            return (searchTxid[0])
-        except IndexError:
-            return notFound
+        if type(transaction) == str:
+            if blockchain == 'all':
+                res = webRequest(transaction)
+                # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
+                # Mongo gives us bytes of long string
+                try:
+                    jsonData = json.loads(res)
+                    return jsonData
+                except:
+                    workingData = res
+                    test = re.search(rb'NumberLong', workingData)
+
+                    while test != None:
+                        test = re.search(rb'NumberLong', workingData)
+
+                        if test == None:
+                            break
+
+                        timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                        print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
+                        numLong = re.search(rb'NumberLong.*?".*?"?"?\)', workingData)
+                        resul = (numLong.group(0))
+                        onlyDigits = (re.findall(rb'\d+', resul) [0])
+                        final = (str(onlyDigits))
+                        aggregate = bytes('"' + final + '"', encoding='utf8')
+                        workingData = workingData.replace(bytes(resul), bytes(aggregate))
+
+                    fixedJson = json.loads(workingData.decode("utf-8"))
+                    return fixedJson
+            else:
+                try:
+                    searchBlock = MC[blockchain]['blocks'].find({'tx' : str(transaction)},{ "_id" : 0})
+                    return (searchBlock[0])
+                except IndexError:
+                    return notFound
+        else:
+            return (json.loads('{"ERROR" : "txid=Only string are allowed"}'))
 
 ''' http://127.0.0.1:5001/apiv1/basic/findbywallet?assetname=adeptio&addr=AV12hgJ8VzCt9ANmYCN6rbBLEYPt9VJTP6 '''
 class Wallet(Resource):
