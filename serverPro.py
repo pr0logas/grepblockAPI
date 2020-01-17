@@ -214,7 +214,7 @@ class Blockhash(Resource):
     def get(self):
         blockHash = request.args.get('blockhash')
         blockchain = request.args.get('assetname')
-        if checkInvalidChars(blockHash) == 'OK':
+        if checkInvalidChars(str(blockHash)) == 'OK':
             if blockchain == 'all':
                 res = webRequest(blockHash)
                 # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
