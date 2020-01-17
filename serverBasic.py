@@ -28,18 +28,18 @@ def get_real_ip():
     print (str(request.remote_addr) + ' Client initiated request ->')
     return (request.remote_addr)
 
-@auth.verify_password
-def verify(username, password):
-    if not (username and password):
-        return False
-    return USER_DATA.get(username) == password
-
 # Flask rules
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
 limiter = Limiter(app, key_func=get_real_ip, default_limits=["60/minute"])
 app.url_map.strict_slashes = False
 api = Api(app, prefix="/apiv1/basic")
+
+@auth.verify_password
+def verify(username, password):
+    if not (username and password):
+        return False
+    return USER_DATA.get(username) == password
 
 def checkInvalidChars(value):
     regex = re.compile('[@_!#$%^&*()<>?/\|}{~:,.}{+]')
