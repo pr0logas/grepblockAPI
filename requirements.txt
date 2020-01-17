@@ -5,6 +5,7 @@ Flask==0.12
 Flask-Jsonpify==1.5.0
 Flask-RESTful==0.3.5
 Flask-SQLAlchemy==2.1
+flask-httpauth==3.3.0
 itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==0.23
