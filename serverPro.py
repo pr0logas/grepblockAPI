@@ -214,40 +214,43 @@ class Blockhash(Resource):
     def get(self):
         blockHash = request.args.get('blockhash')
         blockchain = request.args.get('assetname')
-        if blockchain == 'all':
-            res = webRequest(blockHash)
-            # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
-            # Mongo gives us bytes of long string
-            try:
-                jsonData = json.loads(res)
-                return jsonData
-            except:
-                workingData = res
-                test = re.search(rb'NumberLong', workingData)
-
-                while test != None:
+        if checkInvalidChars(str(blockHash)) == 'OK':
+            if blockchain == 'all':
+                res = webRequest(blockHash)
+                # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
+                # Mongo gives us bytes of long string
+                try:
+                    jsonData = json.loads(res)
+                    return jsonData
+                except:
+                    workingData = res
                     test = re.search(rb'NumberLong', workingData)
 
-                    if test == None:
-                        break
+                    while test != None:
+                        test = re.search(rb'NumberLong', workingData)
 
-                    timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-                    print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
-                    numLong = re.search(rb'NumberLong.*?".*?"?"?\)', workingData)
-                    resul = (numLong.group(0))
-                    onlyDigits = (re.findall(rb'\d+', resul) [0])
-                    final = (str(onlyDigits))
-                    aggregate = bytes('"' + final + '"', encoding='utf8')
-                    workingData = workingData.replace(bytes(resul), bytes(aggregate))
+                        if test == None:
+                            break
 
-                fixedJson = json.loads(workingData.decode("utf-8"))
-                return fixedJson
+                        timeSet = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+                        print(str(timeSet) + ' ***Failed to return JSON. Probably - "NumberLong" problem. Trying to reformat***')
+                        numLong = re.search(rb'NumberLong.*?".*?"?"?\)', workingData)
+                        resul = (numLong.group(0))
+                        onlyDigits = (re.findall(rb'\d+', resul) [0])
+                        final = (str(onlyDigits))
+                        aggregate = bytes('"' + final + '"', encoding='utf8')
+                        workingData = workingData.replace(bytes(resul), bytes(aggregate))
+
+                    fixedJson = json.loads(workingData.decode("utf-8"))
+                    return fixedJson
+            else:
+                try:
+                    searchBlock = MC[blockchain]['blocks'].find({'hash' : str(blockHash)},{ "_id" : 0})
+                    return (searchBlock[0])
+                except IndexError:
+                    return notFound
         else:
-            try:
-                searchBlock = MC[blockchain]['blocks'].find({'hash' : str(blockHash)},{ "_id" : 0})
-                return (searchBlock[0])
-            except IndexError:
-                return notFound
+            return (json.loads('{"ERROR" : "hash=Invalid chars"}'))
 
 ''' http://127.0.0.1:5002/apiv1/pro/findbytransaction?assetname=adeptio&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
 ''' http://127.0.0.1:5002/apiv1/pro/findbytransaction?assetname=all&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
