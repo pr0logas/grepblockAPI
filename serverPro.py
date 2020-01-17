@@ -6,6 +6,7 @@ import pymongo, json
 from flask import Flask, request, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address, get_ipaddr
+from flask_httpauth import HTTPBasicAuth
 from werkzeug.contrib.fixers import ProxyFix
 from flask_restful import Resource, Api
 from gevent.pywsgi import WSGIServer
@@ -18,7 +19,7 @@ notFound = json.loads('{"ERROR" : "No data found"}')
 
 # User Database
 USER_DATA = {
-    "admin": "SuperSecretsPwd312315_"
+    "admin": "SuperSecretsPwd312315"
 }
 
 # Init MongoDB
@@ -34,6 +35,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
 limiter = Limiter(app, key_func=get_real_ip, default_limits=["600/minute"])
 app.url_map.strict_slashes = False
 api = Api(app, prefix="/apiv1/pro")
+auth = HTTPBasicAuth()
 
 @auth.verify_password
 def verify(username, password):
