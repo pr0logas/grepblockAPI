@@ -214,7 +214,7 @@ class Blockhash(Resource):
     def get(self):
         blockHash = request.args.get('blockhash')
         blockchain = request.args.get('assetname')
-        if type(blockHash) == str:
+        if checkInvalidChars(blockHash) == 'OK':
             if blockchain == 'all':
                 res = webRequest(blockHash)
                 # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
@@ -250,7 +250,7 @@ class Blockhash(Resource):
                 except IndexError:
                     return notFound
         else:
-            return (json.loads('{"ERROR" : "hash=Only string are allowed"}'))
+            return (json.loads('{"ERROR" : "hash=Invalid chars"}'))
 
 ''' http://127.0.0.1:5002/apiv1/pro/findbytransaction?assetname=adeptio&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
 ''' http://127.0.0.1:5002/apiv1/pro/findbytransaction?assetname=all&txid=238b243ef0063f48c06aa36df5c7861dcf108e870dc468cf7ad7d0f4d9198865 '''
@@ -259,7 +259,7 @@ class Transaction(Resource):
     def get(self):
         transaction = request.args.get('txid')
         blockchain = request.args.get('assetname')
-        if type(transaction) == str:
+        if checkInvalidChars(transaction) == 'OK':
             if blockchain == 'all':
                 res = webRequest(transaction)
                 # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
@@ -295,7 +295,7 @@ class Transaction(Resource):
                 except IndexError:
                     return notFound
         else:
-            return (json.loads('{"ERROR" : "txid=Only string are allowed"}'))
+            return (json.loads('{"ERROR" : "txid=Invalid chars"}'))
 
 ''' http://127.0.0.1:5002/apiv1/pro/findbywallet?assetname=adeptio&addr=AV12hgJ8VzCt9ANmYCN6rbBLEYPt9VJTP6 '''
 ''' http://127.0.0.1:5002/apiv1/pro/findbywallet?assetname=all&addr=AV12hgJ8VzCt9ANmYCN6rbBLEYPt9VJTP6 '''
@@ -304,7 +304,7 @@ class Wallet(Resource):
     def get(self):
         walletAddr = request.args.get('addr')
         blockchain = request.args.get('assetname')
-        if type(transaction) == str:
+        if checkInvalidChars(walletAddr) == 'OK':
             if blockchain == 'all':
                 res = webRequest(walletAddr)
                 # There is NumberLong("21314235345") value in some blockchains, which broke the valid JSON. Try to fix that.
@@ -340,7 +340,7 @@ class Wallet(Resource):
                 except IndexError:
                     return notFound
         else:
-            return (json.loads('{"ERROR" : "addr=Only string are allowed"}'))
+            return (json.loads('{"ERROR" : "addr=Invalid chars"}'))
 
 # Routes
 #api.add_resource(GlobalSearch, '/globalsearch')
